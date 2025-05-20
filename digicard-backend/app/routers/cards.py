@@ -15,7 +15,7 @@ async def get_db():
     async with SessionLocal() as session:
         yield session
 
-@router.post("", response_model=CardRead)
+@router.post("/", response_model=CardRead)
 async def create_card(card: CardCreate, db: AsyncSession = Depends(get_db), user: User = Depends(current_active_user)):
     existing = await db.execute(select(Card).where(Card.slug == card.slug))
     if existing.scalar():
@@ -33,7 +33,7 @@ async def create_card(card: CardCreate, db: AsyncSession = Depends(get_db), user
     await db.refresh(new_card)
     return new_card
 
-@router.get("", response_model=list[CardRead])
+@router.get("/", response_model=list[CardRead])
 async def get_my_cards(db: AsyncSession = Depends(get_db), user: User = Depends(current_active_user)):
     result = await db.execute(select(Card).where(Card.owner_id == user.id))
     return result.scalars().all()

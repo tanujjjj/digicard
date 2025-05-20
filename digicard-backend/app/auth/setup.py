@@ -9,7 +9,7 @@ from fastapi_users.manager import BaseUserManager, UUIDIDMixin
 from app.config import SECRET
 import uuid
 
-cookie_transport = CookieTransport(cookie_name="blinq-auth", cookie_max_age=3600)
+cookie_transport = CookieTransport(cookie_name="blinq-auth", cookie_max_age=3600, cookie_secure=True, cookie_samesite="Lax")
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     user_db_model = User

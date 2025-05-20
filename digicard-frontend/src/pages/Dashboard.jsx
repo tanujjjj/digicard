@@ -21,7 +21,7 @@ export default function Dashboard() {
 
   const fetchCards = async () => {
     try {
-      const res = await axios.get("/cards", { withCredentials: true });
+      const res = await axios.get("/cards/", { withCredentials: true });
       setCards(res.data);
     } catch (err) {
       console.error("Failed to load cards", err);
@@ -31,7 +31,7 @@ export default function Dashboard() {
   const createCard = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/cards", form, { withCredentials: true });
+      await axios.post("/cards/", form, { withCredentials: true });
       setForm({ name: "", title: "", company: "", email: "", phone: "", website: "", linkedin: "", bio: "", profile_image_url: "", slug: "" });
       fetchCards(); // Refresh list
     } catch (err) {
