@@ -6,11 +6,11 @@ from app.schemas.user import UserRead, UserCreate
 from app.db.database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import INVITE_CODE
+from app.config import INVITE_CODE, ORIGINS
 app = FastAPI()
 
 
-origins = ["http://localhost:5173"]
+origins = ORIGINS
 
 app.add_middleware(
     CORSMiddleware,
