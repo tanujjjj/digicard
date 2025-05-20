@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "../api/axios";
-const frontend_url = import.meta.env.FRONTEND_URL;
+
+const frontend_url = import.meta.env.VITE_FRONTEND_URL;
+
 
 export default function Dashboard() {
   const [cards, setCards] = useState([]);
