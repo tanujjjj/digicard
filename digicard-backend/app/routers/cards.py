@@ -8,12 +8,25 @@ from app.schemas.card import CardCreate, CardUpdate, CardRead
 from app.auth.setup import current_active_user
 from app.models.user import User
 from uuid import UUID
+from urllib.parse import urlparse
+
 
 router = APIRouter(prefix="/cards", tags=["cards"])
 
 async def get_db():
     async with SessionLocal() as session:
         yield session
+
+def convert_google_drive_url(url: str) -> str:
+    if "drive.google.com" in url:
+        parsed = urlparse(url)
+        parts = parsed.path.split("/")
+        if "file" in parts and "d" in parts:
+            file_id_index = parts.index("d") + 1
+            if file_id_index < len(parts):
+                file_id = parts[file_id_index]
+                return f"https://drive.google.com/thumbnail?id={file_id}"
+    return url
 
 @router.post("/", response_model=CardRead)
 async def create_card(card: CardCreate, db: AsyncSession = Depends(get_db), user: User = Depends(current_active_user)):
@@ -26,6 +39,8 @@ async def create_card(card: CardCreate, db: AsyncSession = Depends(get_db), user
     for field in ["website", "linkedin", "profile_image_url"]:
         if card_data.get(field):
             card_data[field] = str(card_data[field])
+    if card_data.get("profile_image_url"):
+        card_data["profile_image_url"] = convert_google_drive_url(str(card_data["profile_image_url"]))
 
     new_card = Card(**card_data, owner_id=user.id)
     db.add(new_card)
@@ -88,3 +103,5 @@ async def delete_card(card_id: UUID, db: AsyncSession = Depends(get_db), user: U
 
     await db.delete(card_obj)
     await db.commit()
+
+
