@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "../api/axios";
+const frontend_url = import.meta.env.FRONTEND_URL;
 
 export default function Dashboard() {
   const [cards, setCards] = useState([]);
@@ -75,7 +76,7 @@ export default function Dashboard() {
             <div>
               <p className="font-bold">{card.name} – {card.title}</p>
               <p className="text-sm text-gray-600">{card.company}</p>
-              <a className="text-blue-500 text-sm underline" href={`http://localhost:8000/cards/public/${card.slug}`} target="_blank" rel="noreferrer">
+              <a className="text-blue-500 text-sm underline" href={`${frontend_url}/cards/public/${card.slug}`} target="_blank" rel="noreferrer">
                 /cards/public/{card.slug}
               </a>
             </div>

@@ -10,11 +10,11 @@ from app.config import INVITE_CODE, ORIGINS
 app = FastAPI()
 
 
-origins = ORIGINS
+print(ORIGINS)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
