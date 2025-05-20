@@ -10,8 +10,8 @@ class CardCreate(BaseModel):
     company: Optional[str]
     email: Optional[str]
     phone: Optional[str]
-    website: Optional[HttpUrl]
-    linkedin: Optional[HttpUrl]
+    website: Optional[HttpUrl] = None
+    linkedin: Optional[HttpUrl] = None
     bio: Optional[str]
     profile_image_url: Optional[HttpUrl]
     slug: constr(strip_whitespace=True, min_length=3)

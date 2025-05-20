@@ -7,6 +7,7 @@ const frontend_url = import.meta.env.VITE_FRONTEND_URL;
 export default function Dashboard() {
   const navigate = useNavigate();
   const [cards, setCards] = useState([]);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "",
     title: "",
@@ -61,8 +62,21 @@ export default function Dashboard() {
 
   const createCard = async (e) => {
     e.preventDefault();
+    setError("");
+
+    // Strip out empty optional URL fields
+    const cleanedForm = Object.fromEntries(
+      Object.entries(form).filter(([key, value]) => {
+        const trimmed = value.trim();
+        if (["website", "linkedin", "profile_image_url"].includes(key)) {
+          return trimmed !== "";
+        }
+        return true;
+      })
+    );
+
     try {
-      await api.post("/cards/", form);
+      await api.post("/cards/", cleanedForm);
       setForm({
         name: "", title: "", company: "", email: "", phone: "",
         website: "", linkedin: "", bio: "", profile_image_url: "", slug: ""
@@ -70,6 +84,11 @@ export default function Dashboard() {
       fetchCards();
     } catch (err) {
       console.error("Failed to create card", err);
+      if (err.response?.status === 422) {
+        setError("Please fill all required fields correctly. Ensure slug is at least 3 characters, and all URLs are valid.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -95,6 +114,12 @@ export default function Dashboard() {
         </button>
       </div>
 
+      {error && (
+        <div className="mb-4 p-3 text-red-700 bg-red-100 border border-red-300 rounded">
+          {error}
+        </div>
+      )}
+
       <form onSubmit={createCard} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {Object.keys(form).map((field) => (
           <input
@@ -102,6 +127,7 @@ export default function Dashboard() {
             type="text"
             value={form[field]}
             placeholder={field.replace(/_/g, " ")}
+            required={["name", "slug"].includes(field)}
             onChange={(e) => setForm({ ...form, [field]: e.target.value })}
             className="p-2 border rounded"
           />
