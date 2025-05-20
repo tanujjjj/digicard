@@ -1,0 +1,43 @@
+# --- General ---
+*.log
+*.env
+.env.*
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+dist/
+build/
+*.sqlite3
+
+# --- Python / FastAPI (digicard-backend/) ---
+digicard-backend/__pycache__/
+digicard-backend/.mypy_cache/
+digicard-backend/.pytest_cache/
+digicard-backend/instance/
+digicard-backend/alembic/versions/
+digicard-backend/.env
+digicard-backend/venv/
+digicard-backend/.venv/
+digicard-backend/*.db
+
+# --- Conda / venv environments ---
+*.egg-info/
+.venv/
+venv/
+*.conda
+
+# --- React / Vite (digicard-frontend/) ---
+digicard-frontend/node_modules/
+digicard-frontend/dist/
+digicard-frontend/.env
+digicard-frontend/.DS_Store
+
+# --- VSCode / IDE settings ---
+.vscode/
+.idea/
+*.swp
+
+# --- OS Files ---
+Thumbs.db
+ehthumbs.db
