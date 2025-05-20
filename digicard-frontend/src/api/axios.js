@@ -1,11 +1,20 @@
 import axios from "axios";
 
-// ✅ Read from environment variable (Vite uses import.meta.env)
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const api = axios.create({
   baseURL,
-  withCredentials: true,
 });
+
+// ⬇️ Optional: Authenticated requests with token
+export const apiWithToken = () => {
+  const token = localStorage.getItem("token");
+  return axios.create({
+    baseURL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+};
 
 export default api;

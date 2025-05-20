@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 
 const frontend_url = import.meta.env.VITE_FRONTEND_URL;
 
-
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [cards, setCards] = useState([]);
   const [form, setForm] = useState({
     name: "",
@@ -19,21 +20,54 @@ export default function Dashboard() {
     slug: "",
   });
 
+  const token = localStorage.getItem("token");
+
+  const api = axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
   const fetchCards = async () => {
     try {
-      const res = await axios.get("/cards/", { withCredentials: true });
+      const res = await api.get("/cards/");
       setCards(res.data);
     } catch (err) {
       console.error("Failed to load cards", err);
     }
   };
 
+  const checkAuth = async () => {
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    try {
+      await api.get("/auth/me");
+      fetchCards();
+    } catch (err) {
+      console.warn("Invalid token or session expired. Redirecting.");
+      localStorage.removeItem("token");
+      navigate("/");
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
   const createCard = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/cards/", form, { withCredentials: true });
-      setForm({ name: "", title: "", company: "", email: "", phone: "", website: "", linkedin: "", bio: "", profile_image_url: "", slug: "" });
-      fetchCards(); // Refresh list
+      await api.post("/cards/", form);
+      setForm({
+        name: "", title: "", company: "", email: "", phone: "",
+        website: "", linkedin: "", bio: "", profile_image_url: "", slug: ""
+      });
+      fetchCards();
     } catch (err) {
       console.error("Failed to create card", err);
     }
@@ -41,7 +75,7 @@ export default function Dashboard() {
 
   const deleteCard = async (id) => {
     try {
-      await axios.delete(`/cards/${id}`, { withCredentials: true });
+      await api.delete(`/cards/${id}`);
       fetchCards();
     } catch (err) {
       console.error("Failed to delete", err);
@@ -49,12 +83,17 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchCards();
+    checkAuth();
   }, []);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6">My Business Cards</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold">My Business Cards</h2>
+        <button onClick={logout} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+          Logout
+        </button>
+      </div>
 
       <form onSubmit={createCard} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {Object.keys(form).map((field) => (
@@ -78,11 +117,18 @@ export default function Dashboard() {
             <div>
               <p className="font-bold">{card.name} – {card.title}</p>
               <p className="text-sm text-gray-600">{card.company}</p>
-              <a className="text-blue-500 text-sm underline" href={`${frontend_url}/cards/public/${card.slug}`} target="_blank" rel="noreferrer">
+              <a
+                className="text-blue-500 text-sm underline"
+                href={`${frontend_url}/cards/public/${card.slug}`}
+                target="_blank"
+                rel="noreferrer"
+              >
                 /cards/public/{card.slug}
               </a>
             </div>
-            <button onClick={() => deleteCard(card.id)} className="text-red-600 hover:underline">Delete</button>
+            <button onClick={() => deleteCard(card.id)} className="text-red-600 hover:underline">
+              Delete
+            </button>
           </li>
         ))}
       </ul>
