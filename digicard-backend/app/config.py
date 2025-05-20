@@ -7,4 +7,4 @@ SECRET = os.getenv("SECRET") or "super-secret-jwt-key"
 INVITE_CODE = os.getenv("INVITE_CODE") or "abc"
 QR_URL = os.getenv("QR_URL") or "http://localhost:5173/cards/public"
 
-ORIGIN = os.getenv("ORIGINS").split(",") if os.getenv("ORIGINS") else "http://localhost:5173"
+ORIGINS = os.getenv("ORIGINS").split(",") if os.getenv("ORIGINS") else "http://localhost:5173"
