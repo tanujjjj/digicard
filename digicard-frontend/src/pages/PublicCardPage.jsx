@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../api/axios";
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 export default function PublicCardPage() {
   const { slug } = useParams();
@@ -25,7 +26,7 @@ export default function PublicCardPage() {
   if (!card)
     return <div className="h-screen flex justify-center items-center">Loading...</div>;
 
-  const qrUrl = `http://localhost:8000/cards/${slug}/qrcode`;
+  const qrUrl = `${baseURL}/cards/${slug}/qrcode`;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-10">
